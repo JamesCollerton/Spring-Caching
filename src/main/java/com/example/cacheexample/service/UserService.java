@@ -13,17 +13,15 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    /*
-        Lazy Loading
-     */
     public User getUser(String id) {
-        return null;
+        log.info("Calling DAO to get user with Id {}", id);
+        return userDao.getUser(Long.parseLong(id));
     }
 
     /*
         Write through
      */
     public User createUser(User user) {
-        return null;
+        return userDao.createUser(user);
     }
 }
