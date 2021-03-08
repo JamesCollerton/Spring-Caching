@@ -5,8 +5,6 @@ import com.example.cacheexample.repository.cache.UserCacheRepository;
 import com.example.cacheexample.repository.db.UserDatabaseRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -20,14 +18,6 @@ public class UserDaoImpl implements UserDao {
 
     @Autowired
     private UserCacheRepository userCacheRepository;
-
-    private RedisTemplate<Long, User> redisTemplate;
-    private HashOperations hashOperations;
-
-    public UserDaoImpl(RedisTemplate<Long, User> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-        hashOperations = redisTemplate.opsForHash();
-    }
 
     @Override
     public User getUser(Long id) {
@@ -71,7 +61,7 @@ public class UserDaoImpl implements UserDao {
 
         userCacheRepository.save(newUser);
 
-        log.info("Saved new user in the cache Id {}, name {}", user.getId());
+        log.info("Saved new user in the cache Id {}, name {}", user.getId(), user.getName());
 
         return newUser;
     }
