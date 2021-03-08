@@ -17,8 +17,8 @@ public class CacheConfiguration {
     }
 
     @Bean
-    public RedisTemplate<Long, User> redisTemplate() {
-        RedisTemplate<Long, User> redisTemplate = new RedisTemplate<>();
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory());
         return redisTemplate;
     }

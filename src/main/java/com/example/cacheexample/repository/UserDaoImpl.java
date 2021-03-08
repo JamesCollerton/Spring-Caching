@@ -1,6 +1,8 @@
 package com.example.cacheexample.repository;
 
 import com.example.cacheexample.model.User;
+import com.example.cacheexample.repository.cache.UserCacheRepository;
+import com.example.cacheexample.repository.db.UserDatabaseRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
@@ -14,7 +16,10 @@ import java.util.Optional;
 public class UserDaoImpl implements UserDao {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserDatabaseRepository userDatabaseRepository;
+
+    @Autowired
+    private UserCacheRepository userCacheRepository;
 
     private RedisTemplate<Long, User> redisTemplate;
     private HashOperations hashOperations;
@@ -29,44 +34,44 @@ public class UserDaoImpl implements UserDao {
 
         log.info("Checking in cache for user with Id {}", id);
 
-        User user = (User) hashOperations.get("USER",id);
+        Optional<User> userCacheOptional = userCacheRepository.findById(id);
 
         log.info("Retrieved cache result for user with Id {}", id);
 
-        if(user == null) {
+        return userCacheOptional.orElseGet(() -> {
 
             log.info("No user with Id {} in cache", id);
 
-            Optional<User> optionalUser = userRepository.findById(id);
+            Optional<User> optionalUser = userDatabaseRepository.findById(id);
 
             log.info("Retrieved user with Id {} from database", id);
 
-            user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
+            User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
 
             log.info("Persisting user with Id {} to cache", id);
 
-            hashOperations.put("USER", user.getId(), user);
+            User cacheUser = userCacheRepository.save(user);
 
-            log.info("Persisted user with Id {} to cache", id);
-        } else {
-            log.info("User with Id {} in cache", id);
-        }
+            log.info("Persisted user with Id {} to cache", cacheUser.getId());
 
-        return user;
+            return user;
+
+        });
+
     }
 
     @Override
     public User createUser(User user) {
 
-        log.info("Creating a new user in the database {}", user.getId());
+        log.info("Creating a new user in the database with name {}", user.getName());
 
-        User newUser =  userRepository.save(user);
+        User newUser = userDatabaseRepository.save(user);
 
-        log.info("Saved new user in the database {}", user.getId());
+        log.info("Saved new user in the database Id {}, name {}", user.getId(), user.getName());
 
-        hashOperations.put("USER", user.getId(), newUser);
+        userCacheRepository.save(newUser);
 
-        log.info("Saved new user in the cache {}", user.getId());
+        log.info("Saved new user in the cache Id {}, name {}", user.getId());
 
         return newUser;
     }

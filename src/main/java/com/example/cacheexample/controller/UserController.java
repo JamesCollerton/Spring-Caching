@@ -27,6 +27,7 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<User> createUser(@Validated @RequestBody User user) {
+        log.info("Persisting user with name {}", user.getName());
         return ResponseEntity.ok(userService.createUser(user));
     }
 

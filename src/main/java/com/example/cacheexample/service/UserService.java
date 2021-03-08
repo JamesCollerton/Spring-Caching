@@ -18,10 +18,8 @@ public class UserService {
         return userDao.getUser(Long.parseLong(id));
     }
 
-    /*
-        Write through
-     */
     public User createUser(User user) {
+        log.info("Calling DAO to persist new user with name {}", user.getName());
         return userDao.createUser(user);
     }
 }
