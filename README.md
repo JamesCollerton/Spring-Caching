@@ -5,5 +5,5 @@ A small example of using Redis caching with Spring. It was developed as part of 
 ![image](https://user-images.githubusercontent.com/8677801/113471854-1593b780-9457-11eb-9b30-06b152ee42c8.png)
 
 The application demonstrates two methods of caching:
-- *Lazy Loading:* When we retrieve a user from the database they are also written to the cache.
-- *Write Through:* When we write a user to the database they are also written to the cache.
+- **Lazy Loading:** When we retrieve a user from the database they are also written to the cache.
+- **Write Through:** When we write a user to the database they are also written to the cache.
